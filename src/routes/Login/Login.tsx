@@ -1,5 +1,6 @@
 import { useNavigate } from '@solidjs/router'
 import { onMount } from 'solid-js'
+import './Login.css'
 
 function Login() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ function Login() {
     const response = fetch('http://localhost:8080/auth/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain',
       },
       body: JSON.stringify({ username, password }),
     }).then((res) => res.json()).then((res) => res)
@@ -34,7 +35,7 @@ function Login() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form class="form" onSubmit={handleSubmit}>
         <label for="username">Username</label>
         <input type="text" id="username" name="username" />
         <label for="password">Password</label>

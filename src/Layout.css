@@ -1,31 +1,30 @@
 .layout {
-    display: grid;
-    grid-template-areas:
-        "menu content content content content"
-        "menu footer footer footer footer";
-    grid-template-rows: 1fr 10vh;
-    grid-template-columns: 20vw;
-    grid-gap: 10px;
-    height: 100vh;
+  display: grid;
+  grid-template-areas:
+    "menu content content content content"
+    "menu footer footer footer footer";
+  grid-template-rows: 1fr 10vh;
+  grid-template-columns: 20vw;
+  grid-gap: 10px;
+  height: 100vh;
 
-    nav {
-        grid-area: menu;
-    }
+  nav {
+    grid-area: menu;
+  }
 
-    .content {
-        grid-area: content;
-    }
+  .content {
+    grid-area: content;
+  }
 
-    footer {
-        grid-area: footer;
-    }
+  footer {
+    grid-area: footer;
+  }
 
-    .menu {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        align-items: center;
-        background-color: #333;
-    }
+  .menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #333;
+  }
 }
-

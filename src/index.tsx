@@ -6,17 +6,17 @@ import './index.css'
 import Layout from './Layout'
 import Home from './routes/Home'
 import NotFound from './routes/NotFound'
-import Login from './routes/Login'
+import Login from './routes/Login/Login'
 
 const root = document.getElementById('root')
 
 render(() =>
-    <Router>
-        <Route path="/" component={Layout}>
-            <Route path="/" component={Home} />
-        </Route>
-        <Route path="*" component={NotFound} />
-        <Route path="/login" component={Login} />
-    </Router>
-    , root!
+  <Router>
+    <Route path="/" component={Layout}>
+      <Route path="/" component={Home} />
+    </Route>
+    <Route path="*" component={NotFound} />
+    <Route path="/login" component={Login} />
+  </Router>
+  , root!
 )
