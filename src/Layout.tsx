@@ -1,6 +1,5 @@
 import './Layout.css'
 import { JSX } from 'solid-js'
-import Header from './lib/Layout/Header'
 
 type Props = {
   children: JSX.Element[]
@@ -9,7 +8,9 @@ type Props = {
 function Layout(props: Props) {
   return (
     <main class="layout">
-      <Header />
+      <header>
+        <h1>Header</h1>
+      </header>
       <div class="content">
         {props.children}
       </div>

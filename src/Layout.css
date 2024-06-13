@@ -1,24 +1,7 @@
 .layout {
   display: grid;
-  grid-template-areas:
-    "menu content content content content"
-    "menu footer footer footer footer";
-  grid-template-rows: 1fr 10vh;
-  grid-template-columns: 20vw;
-  grid-gap: 10px;
-  height: 100vh;
-
-  nav {
-    grid-area: menu;
-  }
-
-  .content {
-    grid-area: content;
-  }
-
-  footer {
-    grid-area: footer;
-  }
+  grid-template-rows: 10vh 80vh 10vh;
+  justify-content: center;
 
   .menu {
     display: flex;
