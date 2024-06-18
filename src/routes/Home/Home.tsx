@@ -1,8 +1,30 @@
-import { JSX } from 'solid-js'
+import { JSX, createSignal, onMount, For } from 'solid-js'
 import './Home.css'
+import FileTree from './FileTree'
+
+interface FileSys {
+  id: string
+  parent_id: string
+  name: string
+}
 
 function Home(): JSX.Element {
-  // let files: FileList | undefined = undefined
+  const [files, setFiles] = createSignal<FileTree>()
+  const [fileSys, setFileSys] = createSignal<FileSys[]>([])
+
+  onMount(() => {
+    getFiles()
+  })
+
+  function getFiles(): void {
+    fetch('http://localhost:8080/files')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        setFileSys(data)
+      })
+
+  }
 
   function handleUpload(event: Event): void {
     const target = event.target as HTMLInputElement
@@ -26,6 +48,7 @@ function Home(): JSX.Element {
         </label>
       </section>
       <section class="content">
+        <For each={fileSys()}>{file => <div>{file.name}</div>}</For>
       </section>
     </main>
   )

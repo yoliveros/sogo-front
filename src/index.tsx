@@ -4,7 +4,7 @@ import { Router, Route } from '@solidjs/router'
 
 import './index.css'
 import Layout from './Layout'
-import Home from './routes/Home'
+import Home from './routes/Home/Home'
 import NotFound from './routes/NotFound'
 
 const root = document.getElementById('root')
