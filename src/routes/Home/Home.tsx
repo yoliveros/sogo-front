@@ -1,6 +1,5 @@
-import { JSX, createSignal, onMount, For, Match, Switch } from 'solid-js'
+import { JSX, createSignal, onMount, For, Match, Switch, createEffect } from 'solid-js'
 import './Home.css'
-import FileTree from './FileTree'
 
 interface FileSys {
   id?: string
@@ -9,24 +8,67 @@ interface FileSys {
   is_file: boolean
 }
 
+interface Breadcrumb {
+  name: string
+  id: string
+}
+
+interface Parent {
+  id: string
+  name: string
+}
+
 function Home(): JSX.Element {
-  const [files, setFiles] = createSignal<FileTree>()
   const [fileSys, setFileSys] = createSignal<FileSys[]>([])
+  const [allFiles, setAllFiles] = createSignal<FileSys[]>([])
   const [dialogOpen, setDialogOpen] = createSignal(false)
   const [folderName, setFolderName] = createSignal('')
-  const [parentId, setParentId] = createSignal<string | undefined>(undefined)
+  const [parentId, setParentId] = createSignal<Parent | undefined>(undefined)
+  const [breadcrumb, setBreadcrumb] = createSignal<Breadcrumb[]>([])
 
   onMount(() => {
     getFiles()
   })
 
+
+  function navigate(file: FileSys): void {
+    setParentId({
+      id: file.id as string,
+      name: file.name as string
+    })
+
+    const newFileSys: FileSys[] = []
+    allFiles().map((f: FileSys) => {
+      if (f.parent_id === parentId()?.id) {
+        newFileSys.push(f)
+      }
+    })
+
+    setFileSys(newFileSys)
+
+    setBreadcrumb(prev =>
+      prev.concat([{
+        name: parentId()?.name as string,
+        id: parentId()?.id as string
+      }])
+    )
+  }
+
   function getFiles(): void {
     fetch('http://localhost:8080/files')
       .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        setFileSys(data)
+      .then((data: FileSys[]) => {
+        let root: FileSys[] = data.filter((file: FileSys) => {
+          if (!file.parent_id) {
+            console.log(file)
+            return file
+          }
+        })
+
+        setFileSys(root)
+        setAllFiles(data)
       })
+
   }
 
   function handleUpload(event: Event): void {
@@ -34,12 +76,15 @@ function Home(): JSX.Element {
 
     const formData = new FormData()
     formData.append('file', target.files![0])
+    if (parentId()?.id) {
+      formData.append('parent_id', parentId()?.id as string)
+    }
 
     fetch('http://localhost:8080/upload', {
       method: 'POST',
       body: formData
-    }).then(response => response.json())
-      .then(() => {
+    })
+      .finally(() => {
         getFiles()
       })
   }
@@ -48,7 +93,7 @@ function Home(): JSX.Element {
     event.preventDefault()
 
     const newFolder: FileSys = {
-      parent_id: parentId(),
+      parent_id: parentId()?.id,
       name: folderName(),
       is_file: false,
     }
@@ -66,6 +111,14 @@ function Home(): JSX.Element {
 
   return (
     <main class="home">
+      <section class="breadcrumb">
+        <For each={breadcrumb()}>
+          {(breadcrumb: Breadcrumb) =>
+            <div onClick={() => setParentId(breadcrumb)}>
+              {breadcrumb.name}
+            </div>}
+        </For>
+      </section>
       <section class="header">
         <button onClick={() => setDialogOpen(true)}>Create Folder</button>
         <label class="upload">
@@ -77,10 +130,12 @@ function Home(): JSX.Element {
         <For each={fileSys()}>{file =>
           <Switch>
             <Match when={file.is_file}>
-              <div class="file"></div>
+              <div class="file">FL.{file.name}</div>
             </Match>
             <Match when={!file.is_file}>
-              <div class="folder">{file.name}</div>
+              <div class="folder" onClick={() => navigate(file)}>
+                FD.{file.name}
+              </div>
             </Match>
           </Switch>
         }</For>

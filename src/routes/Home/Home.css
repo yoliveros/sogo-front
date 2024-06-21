@@ -7,34 +7,56 @@
   flex-direction: column;
   justify-content: center;
 
+  .breadcrumb {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid white;
+    display: flex;
+
+    ::after {
+      content: ' > ';
+    }
+  }
+
   .header {
     width: 100%;
     text-align: center;
     border: 1px solid white;
+    display: flex;
+    justify-content: space-evenly;
 
     .upload {
       cursor: pointer;
+      padding: 5px;
+      border: 1px solid white;
     }
+
+    button {
+      padding: 5px;
+      cursor: pointer;
+    }
+
   }
 
   .content {
     height: 100%;
     width: 100%;
+    gap: .25rem;
+    display: flex;
+    flex-direction: column;
     border: 1px solid white;
   }
 
-  .file{
-    width: 100%;
-    height: 100%;
-    border: 1px solid white;
+  .file {
+    font-style: italic;
   }
 
-  .folder{
+  .folder {
     cursor: pointer;
   }
 }
 
-.close{
+.close {
   cursor: pointer;
   position: absolute;
   right: 5px;
