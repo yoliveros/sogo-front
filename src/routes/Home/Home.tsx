@@ -1,4 +1,4 @@
-import { JSX, createSignal, onMount, For, Match, Switch, createEffect } from 'solid-js'
+import { JSX, createSignal, onMount, For, Match, Switch } from 'solid-js'
 import './Home.css'
 
 interface FileSys {
@@ -10,7 +10,7 @@ interface FileSys {
 
 interface Breadcrumb {
   name: string
-  id: string
+  id: string | null
 }
 
 interface Parent {
@@ -24,7 +24,7 @@ function Home(): JSX.Element {
   const [dialogOpen, setDialogOpen] = createSignal(false)
   const [folderName, setFolderName] = createSignal('')
   const [parentId, setParentId] = createSignal<Parent | undefined>(undefined)
-  const [breadcrumb, setBreadcrumb] = createSignal<Breadcrumb[]>([])
+  const [breadcrumb, setBreadcrumb] = createSignal<Breadcrumb[]>([{ name: 'root', id: null }])
 
   onMount(() => {
     getFiles()
@@ -46,12 +46,21 @@ function Home(): JSX.Element {
 
     setFileSys(newFileSys)
 
-    setBreadcrumb(prev =>
-      prev.concat([{
-        name: parentId()?.name as string,
-        id: parentId()?.id as string
-      }])
-    )
+    setBreadcrumb(prev => {
+      if (!file.id) {
+        return [{
+          name: 'root', id: null
+        }]
+      }
+
+      for (let i = 0; i < prev.length; i++) {
+        if (prev[i].id === parentId()?.id) {
+          return prev.slice(0, i + 1)
+        }
+      }
+
+      return prev.concat({ name: file.name as string, id: file.id as string })
+    })
   }
 
   function getFiles(): void {
@@ -59,8 +68,11 @@ function Home(): JSX.Element {
       .then(response => response.json())
       .then((data: FileSys[]) => {
         let root: FileSys[] = data.filter((file: FileSys) => {
+          if (parentId()) {
+            return file.parent_id === parentId()?.id
+          }
+
           if (!file.parent_id) {
-            console.log(file)
             return file
           }
         })
@@ -114,7 +126,11 @@ function Home(): JSX.Element {
       <section class="breadcrumb">
         <For each={breadcrumb()}>
           {(breadcrumb: Breadcrumb) =>
-            <div onClick={() => setParentId(breadcrumb)}>
+            <div onClick={() => navigate({
+              id: breadcrumb.id,
+              name: breadcrumb.name,
+              is_file: false
+            })}>
               {breadcrumb.name}
             </div>}
         </For>
